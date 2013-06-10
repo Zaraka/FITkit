@@ -3,7 +3,6 @@
 *******************************************************************************/
 
 #include <fitkitlib.h>
-#include "vga.h"
 
 #include <string.h>
 #include <stdbool.h>

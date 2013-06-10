@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<project outputprefix="tools">
+<project outputprefix="tl">
 
     <!--  Project description -->
     <name>VGA nástroje</name>
+	<category>IVH VGA</category>
     <author>Nikita Vaňků</author>
-    <revision>0</revision>
-    <description>.</description>
+    <description>Some descriptions of tools</description>
 
     <!--  MCU part -->
     <mcu>
