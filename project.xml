@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project outputprefix="tools">
+
+    <!--  Project description -->
+    <name>VGA nástroje</name>
+    <author>Nikita Vaňků</author>
+    <revision>0</revision>
+    <description>.</description>
+
+    <!--  MCU part -->
+    <mcu>
+        <file>main.c</file>
+    </mcu>
+
+    <!-- FPGA part -->
+    <fpga architecture="pc">
+        <include>fpga/ctrls/keyboard/package.xml</include>
+        <include>fpga/ctrls/vga/package.xml</include>
+        <file>tools.vhd</file>
+    </fpga>
+
+</project>
