@@ -9,6 +9,7 @@
 
     <!--  MCU part -->
     <mcu>
+	<include>mcu/libs/lcd/package.xml</include>
         <file>main.c</file>
     </mcu>
 

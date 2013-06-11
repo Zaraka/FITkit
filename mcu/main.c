@@ -3,7 +3,7 @@
 *******************************************************************************/
 
 #include <fitkitlib.h>
-
+#include <lcd/display.h>
 #include <string.h>
 #include <stdbool.h>
 
@@ -51,7 +51,8 @@ unsigned char decode_user_cmd(char *cmd_ucase, char *cmd)
  * 
  */
 void fpga_initialized(){
-  
+  LCD_init();
+  LCD_write_string("VGA Tools");
 }
 
 
