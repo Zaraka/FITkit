@@ -11,8 +11,8 @@
  * calls after Terminal message "help"
  */
 void print_user_help(void){ 
-  term_send_str_crlf(" VER - verze programu")
-  term_send_str_crlf(" DEMO - spusti demo")
+  term_send_str_crlf(" VER - verze programu");
+  term_send_str_crlf(" DEMO - spusti demo");
 }
 
 
@@ -46,7 +46,7 @@ int main(void)
 {
 
   initialize_hardware();
-
+  term_send_str_crlf("Let us play Pong!");
   set_led_d6(1);
   set_led_d5(0);
 

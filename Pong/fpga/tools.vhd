@@ -51,7 +51,10 @@ architecture tools_arch of tlv_pc_ifc is
 	color => (r => "00", g => "00", b => "00")
   );
   
-  type list is array (1 to 5) of rectangle;
+  --number of rectangle entities
+  constant num_entities : integer := 5;
+  
+  type list is array (1 to num_entities) of rectangle;
   
   signal entity_list : list := (
 																1 => ( --player1
@@ -61,7 +64,7 @@ architecture tools_arch of tlv_pc_ifc is
 																		h => std_logic_vector(to_unsigned(50, 8)), 
 																		color => (r => "00", g => "00", b => "11")
 																		), 
-																2 => ( --player2
+																2 => ( --computer
 																		x => std_logic_vector(to_unsigned(620, x'length)), 
 																		y => std_logic_vector(to_unsigned(10, 10)), 
 																		w => std_logic_vector(to_unsigned(10, 8)), 
@@ -107,6 +110,15 @@ begin
 	return tmp;
 end function;
 
+function getMiddleY(input : rectangle) return std_logic_vector is
+	variable tmp : integer;
+	variable result : std_logic_vector(9 downto 0);
+begin
+	tmp := conv_integer(input.h) / 2;
+	result := conv_std_logic_vector(tmp, 10) + input.y;
+	return result;
+end function;
+
 component keyboard_controller
 	port(
 		CLK      : in std_logic;
@@ -135,7 +147,7 @@ port map (
 );
 
 
-fps_generator: entity work.engen generic map ( MAXVALUE => 50000) port map ( CLK => CLK, ENABLE => '1', EN => fps );
+fps_generator: entity work.engen generic map ( MAXVALUE => 80000) port map ( CLK => CLK, ENABLE => '1', EN => fps );
 
 vga: entity work.vga_controller(arch_vga_controller)
   port map(
@@ -159,25 +171,108 @@ setmode(r640x480x60, vga_mode);
 
 -- user code here!
 app_logic: process(fps)
+	variable clock_miss : integer := 2;
+	variable clock_counter : integer := 0;
+	variable direction_right : bit := '0';
+	variable direction_up : bit := '1';
+	variable player_move_up : bit := '0';
+	variable computer_move_up : bit := '0';
+	variable restart : bit := '0';
 begin
 	if(fps'event and fps = '1') then
 		if(keyboard(0) = '1') then
 			if(entity_list(1).y > 0) then
 				entity_list(1).y <= entity_list(1).y - std_logic_vector(to_unsigned(1, 10));
+				player_move_up := '1';
 			end if;
-		elsif(keyboard(4) = '1') then
+		elsif(keyboard(1) = '1') then
 			if(entity_list(1).y < 430) then
 				entity_list(1).y <= entity_list(1).y + std_logic_vector(to_unsigned(1, 10));
+				player_move_up := '0';
 			end if;
 		end if;
-		if(keyboard(8) = '1') then
+
+
+	--computer paddle moves
+		if(getMiddleY(entity_list(3)) < getMiddleY(entity_list(2))) then
 			if(entity_list(2).y > 0) then
 				entity_list(2).y <= entity_list(2).y - std_logic_vector(to_unsigned(1, 10));
+				computer_move_up := '1';
 			end if;
-		elsif(keyboard(12) = '1') then
+		elsif(getMiddleY(entity_list(3)) > getMiddleY(entity_list(2))) then
 			if(entity_list(2).y < 430) then
 				entity_list(2).y <= entity_list(2).y + std_logic_vector(to_unsigned(1, 10));
+				computer_move_up := '0';
 			end if;
+		end if;
+		
+		if (clock_counter >= clock_miss) then
+			clock_counter := 0;
+			
+			if(entity_list(3).x = 1) then
+			--computer wins!
+				entity_list(3).x <= std_logic_vector(to_unsigned(320, 10));
+				entity_list(3).y <= std_logic_vector(to_unsigned(240, 10));
+				clock_miss := 2;
+				restart := '1';
+				direction_right := '1';
+			elsif(entity_list(3).x = 630) then
+			--player wins!
+				entity_list(3).x <= std_logic_vector(to_unsigned(320, 10));
+				entity_list(3).y <= std_logic_vector(to_unsigned(240, 10));
+				clock_miss := 2;
+				restart := '1';
+				direction_right := '1';
+			end if;
+			
+			if(restart = '0') then
+				if(entity_list(3).y = 1) then
+					direction_up := '0';
+					clock_miss := clock_miss + 1;
+				elsif(entity_list(3).y = 469) then
+					direction_up := '1';
+					clock_miss := clock_miss - 1;
+				end if;
+				
+				--check player collision
+				if(entity_list(3).x = 20) then
+					if(getMiddleY(entity_list(3)) >= entity_list(1).y and getMiddleY(entity_list(3)) <= (entity_list(1).y + entity_list(1).h)) then
+						direction_right := '1';
+						if(player_move_up = '1') then
+							direction_up := '1';
+						else
+							direction_up := '0';
+						end if;
+					end if;
+				end if;
+				--check computer collision
+				if(entity_list(3).x = 610) then
+						if(getMiddleY(entity_list(3)) >= entity_list(2).y and getMiddleY(entity_list(3)) <= (entity_list(2).y + entity_list(2).h)) then
+							direction_right := '0';
+							if(computer_move_up = '1') then
+								direction_up := '1';
+							else
+								direction_up := '0';
+							end if;
+						end if;
+				end if;
+				
+				if (direction_right = '1') then				
+					entity_list(3).x <= entity_list(3).x + std_logic_vector(to_unsigned(1, 10));
+				else
+					entity_list(3).x <= entity_list(3).x - std_logic_vector(to_unsigned(1, 10));
+				end if;
+				
+				if (direction_up = '1') then
+					entity_list(3).y <= entity_list(3).y - std_logic_vector(to_unsigned(1, 10));
+				else
+					entity_list(3).y <= entity_list(3).y + std_logic_vector(to_unsigned(1, 10));
+				end if;
+			else
+				restart := '0';
+			end if;
+		else
+			clock_counter := clock_counter + 1;
 		end if;
 	end if;
 end process;
@@ -188,7 +283,7 @@ begin
 	if(CLK'event and CLK = '1') then
 		if(vgaRow < 479 and vgaCol < 639) then
 				rgb <= RGB_6to9(bgColor);
-				for i_object in 1 to 5 loop
+				for i_object in 1 to num_entities loop
 					if(entity_list(i_object) = END_RECTANGLE) then
 						exit;
 					end if;

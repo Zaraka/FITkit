@@ -1,4 +1,0 @@
-FITkit
-======
-
-VGA Tools
