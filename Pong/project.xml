@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project outputprefix="tl">
+
+    <!--  Project description -->
+    <name>Pong</name>
+	<category>IVH VGA</category>
+    <author>Nikita Vaňků</author>
+    <description>Implementace entity manažeru a jeho využití na hře
+    pong.</description>
+
+    <!--  MCU part -->
+    <mcu>
+	<include>mcu/libs/lcd/package.xml</include>
+        <file>main.c</file>
+    </mcu>
+
+    <!-- FPGA part -->
+    <fpga architecture="pc">
+        <include>fpga/ctrls/keyboard/package.xml</include>
+        <include>fpga/ctrls/vga/package.xml</include>
+        <file>engen.vhd</file>
+        <file>tools.vhd</file>
+    </fpga>
+
+</project>
