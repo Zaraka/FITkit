@@ -36,7 +36,7 @@ architecture tools_arch of tlv_pc_ifc is
   
   signal bgColor: six := ("00", "00", "00");
   
-  --lets have 16 colors
+  --lets have 4 colors
   type pallete is array (0 to 15) of nine;
   constant colorPallete : pallete := (
 	0 => ("000", "000", "000"),
