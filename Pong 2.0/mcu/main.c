@@ -11,8 +11,9 @@
  * calls after Terminal message "help"
  */
 void print_user_help(void){ 
-  term_send_str_crlf(" VER - verze programu");
-  term_send_str_crlf(" DEMO - spusti demo");
+  term_send_str_crlf(" Ovladani");
+  term_send_str_crlf(" 1 - nahoru");
+  term_send_str_crlf(" 4 - dolu");
 }
 
 
@@ -25,12 +26,7 @@ void print_user_help(void){
  */
 unsigned char decode_user_cmd(char *cmd_ucase, char *cmd)
 {
-  if(strcmp(cmd_ucase, "VER") == 0){
-	term_send_str_crlf("Version 0.1");
-	return USER_COMMAND;
-  } else {
-	return CMD_UNKNOWN;
-  }
+
 }
 
 
